@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coaching &amp; Scouting Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --card: #1f2638;
+    --panel: #050814;
+    --input: #0a0d1c;
+    --line: #2b3450;
+    --text: #e8ecf6;
+    --muted: #8d97b3;
+    --blue: #2563eb;
+    --violet: #4f46e5;
+    --green: #059669;
+    --elite: #f5b83d;
+    --standard: #94a3b8;
+    --ok: #34d399;
+    --bad: #f87171;
+    box-sizing: border-box;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { min-height: 100%; font-size: 112.5%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.09)' stroke-width='3'%3E%3Crect x='40' y='40' width='1120' height='720'/%3E%3Cline x1='600' y1='40' x2='600' y2='760'/%3E%3Ccircle cx='600' cy='400' r='95'/%3E%3Crect x='40' y='225' width='190' height='350'/%3E%3Crect x='40' y='305' width='70' height='190'/%3E%3Crect x='970' y='225' width='190' height='350'/%3E%3Crect x='1090' y='305' width='70' height='190'/%3E%3Cpath d='M230 340 A95 95 0 0 1 230 460'/%3E%3Cpath d='M970 340 A95 95 0 0 0 970 460'/%3E%3C/g%3E%3Ccircle cx='600' cy='400' r='5' fill='rgba(255,255,255,0.09)'/%3E%3C/svg%3E") center / cover no-repeat fixed,
+      linear-gradient(135deg, #0a1020 0%, #0c1f2e 55%, #0b2b22 100%);
+  }
+  .tarjeta {
+    width: 100%;
+    max-width: 1140px;
+    background: var(--card);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  }
+  .cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 22px 28px;
+    background: linear-gradient(100deg, var(--blue) 0%, var(--violet) 55%, var(--green) 100%);
+  }
+  .cabecera h1 { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: 0.01em; }
+  .cabecera p { margin: 2px 0 0; font-size: 0.8rem; font-weight: 600; opacity: 0.85; }
+  .estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+  .estado::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--bad); }
+  .estado.activa { color: var(--ok); }
+  .estado.activa::before { background: var(--ok); }
+  .estado.inactiva { color: var(--bad); }
+
+  .cuerpo { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 34px; padding: 34px; }
+  @media (max-width: 780px) { .cuerpo { grid-template-columns: 1fr; padding: 20px; } }
+
+  .formulario h2 { margin: 0 0 4px; font-size: 1rem; font-weight: 700; }
+  .formulario .sub { margin: 0 0 22px; font-size: 0.78rem; color: var(--muted); }
+  .campo { margin-bottom: 16px; }
+  .fila { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 14px; }
+  label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  label .nota { font-weight: 500; color: var(--muted); text-transform: none; letter-spacing: 0; }
+  input, select {
+    width: 100%;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--input);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  input::placeholder { color: #5b6585; font-weight: 400; }
+  input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  button {
+    width: 100%;
+    margin-top: 6px;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    background: linear-gradient(100deg, var(--blue), var(--green));
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.3);
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: 0.6; cursor: wait; }
+
+  .resultado {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px 32px 30px;
+    min-height: 470px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+  .resultado.elite { border-color: rgba(245, 184, 61, 0.55); box-shadow: 0 0 48px rgba(245, 184, 61, 0.12); }
+  .resultado.estandar { border-color: rgba(148, 163, 184, 0.45); box-shadow: 0 0 48px rgba(148, 163, 184, 0.08); }
+  .rotulo {
+    margin: 0 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .contenido { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .vacio { align-items: center; text-align: center; }
+  .vacio .anillo {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .vacio .anillo::after { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--muted); }
+  .vacio h3 { margin: 0 0 6px; font-size: 0.95rem; }
+  .vacio p { margin: 0; max-width: 28ch; font-size: 0.75rem; color: var(--muted); }
+
+  .candidato { margin: 0 0 10px; font-size: 1.3rem; font-weight: 800; color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+  .chip { font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #121832; border: 1px solid var(--line); color: var(--text); }
+  .veredicto { margin: 0 0 2px; font-size: 4.6rem; font-weight: 800; line-height: 1; letter-spacing: -0.01em; }
+  .veredicto.elite { color: var(--elite); text-shadow: 0 0 36px rgba(245, 184, 61, 0.35); }
+  .veredicto.estandar { color: var(--standard); }
+  .fila-puntaje { display: flex; align-items: baseline; gap: 12px; margin: 14px 0 12px; }
+  .cifra { font-size: 2.3rem; font-weight: 800; line-height: 1; color: #fff; }
+  .cifra-etiqueta { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+  .barra { position: relative; height: 22px; border-radius: 11px; background: #141a2e; overflow: hidden; }
+  .relleno { height: 100%; width: 0; border-radius: 11px; transition: width 0.9s ease-out; }
+  .relleno.elite { background: linear-gradient(90deg, #d99a1c, var(--elite)); }
+  .relleno.estandar { background: linear-gradient(90deg, #64748b, var(--standard)); }
+  .umbral { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: #fff; opacity: 0.7; }
+  .escala { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.72rem; color: var(--muted); }
+  .lectura { margin: 20px 0 10px; padding: 14px 16px; border-radius: 12px; background: #0c1126; border-left: 4px solid var(--standard); font-size: 0.88rem; line-height: 1.45; }
+  .lectura.elite { border-left-color: var(--elite); }
+  .lectura strong { color: #fff; }
+  .aviso { margin: 0; font-size: 0.72rem; color: var(--muted); }
+  .error { margin: 0; text-align: center; font-size: 0.82rem; font-weight: 600; color: var(--bad); }
+  @media (prefers-reduced-motion: reduce) { .relleno { transition: none; } }
+</style>
+</head>
+<body>
+<div class="tarjeta">
+  <header class="cabecera">
+    <div>
+      <h1>COACHING &amp; SCOUTING ANALYTICS</h1>
+      <p>Plataforma de Evaluación Predictiva de Talentos</p>
+    </div>
+    <span class="estado inactiva" id="estado">API APAGADA / INACTIVA</span>
+  </header>
+
+  <div class="cuerpo">
+    <form class="formulario" id="formulario" novalidate>
+      <h2>Parámetros del Jugador</h2>
+      <p class="sub">Ingrese los datos antropométricos y deportivos para la inferencia del modelo.</p>
+
+      <div class="campo">
+        <label for="nombre">Nombre del jugador / candidato</label>
+        <input type="text" id="nombre" maxlength="60" placeholder="Ej: Andrés Arrieta">
+      </div>
+
+      <div class="fila">
+        <div class="campo">
+          <label for="posicion">Posición principal</label>
+          <select id="posicion" required>
+            <option value="">Cargando…</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="edad">Edad (años)</label>
+          <input type="number" id="edad" min="14" max="50" step="1" placeholder="Ej: 22" required>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="estatura">Estatura (cm) <span class="nota">Auto-imputación si se omite</span></label>
+        <input type="number" id="estatura" min="140" max="225" step="1" placeholder="Ej: 178">
+      </div>
+
+      <button type="submit" id="boton">Ejecutar evaluación técnica</button>
+    </form>
+
+    <section class="resultado" aria-live="polite">
+      <p class="rotulo">Sistema de apoyo a la decisión para cuerpo técnico</p>
+      <div class="contenido vacio" id="contenido">
+        <div class="anillo"></div>
+        <h3>Sin evaluación reciente</h3>
+        <p>Complete los datos del jugador a la izquierda y presione evaluar para ver el resultado detallado.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const API_URL = "http://127.0.0.1:8000";
+  const estado = document.getElementById("estado");
+  const selectPosicion = document.getElementById("posicion");
+  const contenido = document.getElementById("contenido");
+  const panel = document.querySelector(".resultado");
+  const boton = document.getElementById("boton");
+  let posicionesCargadas = false;
+
+  const fmt = (n) => n.toLocaleString("es-CO", { maximumFractionDigits: 2 });
+
+  function marcarEstado(activa) {
+    estado.className = "estado " + (activa ? "activa" : "inactiva");
+    estado.textContent = activa ? "API ACTIVA" : "API APAGADA / INACTIVA";
+  }
+
+  function mostrarError(texto) {
+    panel.classList.remove("elite", "estandar");
+    contenido.className = "contenido";
+    contenido.innerHTML = "";
+    const p = document.createElement("p");
+    p.className = "error";
+    p.textContent = texto;
+    contenido.appendChild(p);
+  }
+
+  async function conectar() {
+    try {
+      const resp = await fetch(API_URL + "/posiciones");
+      if (!resp.ok) throw new Error();
+      marcarEstado(true);
+      if (!posicionesCargadas) {
+        const posiciones = await resp.json();
+        selectPosicion.innerHTML = '<option value="">Seleccione</option>';
+        posiciones.forEach((p) => {
+          const op = document.createElement("option");
+          op.value = p.valor;
+          op.textContent = p.nombre;
+          selectPosicion.appendChild(op);
+        });
+        posicionesCargadas = true;
+      }
+    } catch (e) {
+      marcarEstado(false);
+      if (!posicionesCargadas) selectPosicion.innerHTML = '<option value="">No disponible</option>';
+    }
+  }
+
+  document.getElementById("formulario").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const nombre = document.getElementById("nombre").value.trim();
+    const posicion = selectPosicion.value;
+    const edad = document.getElementById("edad").value;
+    const estatura = document.getElementById("estatura").value;
+
+    if (!posicion || edad === "") {
+      mostrarError("Seleccione una posición e indique la edad del jugador.");
+      return;
+    }
+
+    boton.disabled = true;
+    boton.textContent = "Evaluando…";
+
+    try {
+      const resp = await fetch(API_URL + "/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          posicion: posicion,
+          edad: Number(edad),
+          estatura_cm: estatura === "" ? null : Number(estatura)
+        })
+      });
+      marcarEstado(true);
+      if (!resp.ok) {
+        mostrarError("Revise los datos: la edad debe estar entre 14 y 50 años y la estatura entre 140 y 225 cm.");
+        return;
+      }
+      const datos = await resp.json();
+      const chips = [selectPosicion.options[selectPosicion.selectedIndex].text, edad + " años"];
+      if (estatura) chips.push(estatura + " cm"); else chips.push("Estatura estimada");
+      mostrarResultado(datos, nombre || "Jugador sin nombre", chips);
+    } catch (e) {
+      marcarEstado(false);
+      mostrarError("No se pudo conectar con la API. Inicie el servidor con «uvicorn main_api:app --reload».");
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Ejecutar evaluación técnica";
+    }
+  });
+
+  function mostrarResultado(datos, nombre, chips) {
+    const esElite = datos.prediccion === "Élite";
+    const clase = esElite ? "elite" : "estandar";
+    const dif = Math.abs(datos.probabilidad_elite - 50);
+    const lectura = esElite
+      ? "El modelo lo ubica en el <strong>grupo de mayor valor de mercado (Top 25 %)</strong>. Su puntaje supera el umbral por " + fmt(dif) + " puntos."
+      : "El modelo <strong>no lo ubica en el grupo de mayor valor de mercado</strong>. Su puntaje queda " + fmt(dif) + " puntos por debajo del umbral.";
+
+    panel.classList.remove("elite", "estandar");
+    panel.classList.add(clase);
+    contenido.className = "contenido";
+    contenido.innerHTML =
+      '<p class="candidato" id="candidato"></p>' +
+      '<div class="chips" id="chips"></div>' +
+      '<p class="veredicto ' + clase + '">' + datos.prediccion + '</p>' +
+      '<div class="fila-puntaje"><span class="cifra">' + fmt(datos.probabilidad_elite) + ' %</span><span class="cifra-etiqueta">Puntaje de élite</span></div>' +
+      '<div class="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + datos.probabilidad_elite + '">' +
+        '<div class="relleno ' + clase + '" id="relleno"></div><div class="umbral"></div>' +
+      '</div>' +
+      '<div class="escala"><span>0 %</span><span>50 %: umbral del modelo</span><span>100 %</span></div>' +
+      '<p class="lectura ' + clase + '">' + lectura + '</p>' +
+      '<p class="aviso">Sirve para comparar jugadores entre sí; no es la probabilidad real de que el jugador sea élite.</p>';
+
+    document.getElementById("candidato").textContent = nombre;
+    const contChips = document.getElementById("chips");
+    chips.forEach((t) => {
+      const c = document.createElement("span");
+      c.className = "chip";
+      c.textContent = t;
+      contChips.appendChild(c);
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById("relleno").style.width = datos.probabilidad_elite + "%";
+    }));
+  }
+
+  conectar();
+  setInterval(conectar, 5000);
+</script>
+</body>
+</html>
